@@ -20,8 +20,8 @@ from PySide2.QtWidgets import (
     QGraphicsView, QGraphicsScene, QDialog, QApplication, QShortcut, QAction, QMenu, QMessageBox, QWidget
 )
 
-from coffeeboard.image_display import ImageDisplay
-from coffeeboard.dialog import EXRImportDialog
+from image_display import ImageDisplay
+from dialog import EXRImportDialog
 
 
 
