@@ -117,10 +117,15 @@ class CoffeeBoard(QGraphicsView):
         self.scale_factor = 1.0
         
         # Keyboard shortcuts
-        self.save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        self.save_shortcut = QShortcut(QKeySequence("Ctrl+Alt+S"), self)
         self.save_shortcut.activated.connect(self.save_board)
+        
+        self.load_shortcut = QShortcut(QKeySequence("Ctrl+Alt+L"), self)
+        self.load_shortcut.activated.connect(self.load_board)
+        
         self.fit_all_to_view_shortcut = QShortcut(QKeySequence("F"), self)
         self.fit_all_to_view_shortcut.activated.connect(self.fit_all_to_view)
+        
         self.past_shortcut = QShortcut(QKeySequence("Ctrl+V"), self)
         self.past_shortcut.activated.connect(self.paste_from_clipboard)
         
@@ -496,7 +501,6 @@ class CoffeeBoard(QGraphicsView):
                     self.scene.removeItem(item)
                     if item in self.image_items:
                         self.image_items.remove(item)
-            #self._update_scene_rect_after_item_move()
         else:
             super().keyPressEvent(event)
 
@@ -640,25 +644,6 @@ class CoffeeBoard(QGraphicsView):
         self.scene.setSceneRect(padded_rect)
         """
 
-    def _update_scene_rect_after_item_move(self) -> None:
-        """(Inactive) Placeholder for dynamic scene boundary adjustment.
-
-        This private method was originally designed to recalculate the scene's 
-        bounding box (`sceneRect`) based on the current position of all items 
-        (`itemsBoundingRect`). This ensures that the view's scroll area and panning 
-        limits automatically expand as items are moved further out.
-
-        Note:
-            The logic within this method is currently commented out (`pass`), 
-            meaning the scene boundary is static or managed elsewhere.
-        """
-        # Optionally update scene bounds - not called during item moves anymore
-        """
-        items_rect = self.scene.itemsBoundingRect()
-        padded_rect = items_rect.adjusted(-50, -50, 50, 50)
-        self.scene.setSceneRect(padded_rect)
-        """
-        pass
     
     
     def _prompt_for_layer(self, path: str, is_batch: bool = False) -> Tuple[str | None, str | None, bool]:
@@ -947,7 +932,6 @@ class CoffeeBoard(QGraphicsView):
                 self.scene.removeItem(item)
                 if item in self.image_items:
                     self.image_items.remove(item)
-        #self._update_scene_rect_after_item_move()
 
     def clear_all_images(self) -> None:
         """Removes all ImageDisplay items from the scene and resets the board state.
@@ -1289,98 +1273,3 @@ class CoffeeBoard(QGraphicsView):
         3. All paths in the resulting JSON file point to the local, consolidated copies.
         """
         self.save_board(consolidate=True)
-
-
-
-"""
-To Do List:
-BUGS TO FIX:
-- [X] Mose cursor changes to pionting hand but not back to arrow on leaving the view
-- [X] panings sensitivity is odd, needs fixing
-- [X] losses the abilaty to pan after zooming
-
-PRIORITY 1 FEATURES:
-- [X] Implement resize handles for images
-        Not fully functional yet
-- [X] Improve performance with many images
-- [X] Add option to save/load board state
-    [X] Add function to copy imported images to a folder along side save file
-            Fix so it first checks if board is saved, if not prompt to save
-    [X] Remove missing images from save file when loading it cant find them
-- [X] Fix exr images not displaying correctly
-- [X] Add option to import images from clipboard
-- [X] Right-click context menu effects based on click target
-- [X] Fine-tune what conext menu shows based on click target
-- [X] undersök omkoden väljer rätt lager i en exr fil, rad 691
-- [X] Selected format on an exr is not forwarded after the panel is closed
-- [X] test load multiple exr with different layers
-- [X] Add try/except around clipboard paste - In case clipboard has weird data
-- [X] if a file is missing, is it deleted from the json on skiped on loading?
-- [X] Improve zooming behavior to 'infinite' grid
-        I think
-- [ ] shortcuts for save and load ar not working
-- [ ] What did _update_scene_rect_after_item_move do? is it needed?
-- [ ] Remove preview_format save what user selected for each image instead
-
-
-PRIORITY 2 FEATURES:
-- [ ] Saving what board was last opened and restoring it on panel open
-- [ ] Refine context menu options and layout
-        Change so it is dependent what is clicked not what is selected
-- [ ] add options to change defalult behavior  
-        default resize scale for new images
-        default number of columns (how manny colums to layout when adding multiple images)
-        See below for more ideas
-- [ ] droping a .json file onto the board should load that file if it is a coffeeboard file
-- [ ] optimize board loading time
-
-NICE TO HAVE FEATURES:        
-- [ ] Add keyboard shortcuts for common actions
-- [ ] Add option to rotate images
-- [ ] Add option to export board as a single image
-- [ ] Add option to change image opacity
-- [ ] integration with Nuke nodes
-        e.g., link images to Read nodes
-- [ ] Test extensively in Nuke environment
-        add a lot of images and see how it performs
-        add high res images and see how it performs
-        test on different OS
-        test with different Nuke versions
-- [ ] include all supported file formats nuke can write.
-
-
-
-How to Make Settings Change Dynamically in NukeWhen you move configuration variables like min_scale, 
-max_scale, columns, and preview_format out of the __init__, they become class attributes. 
-While they are now clean Python constants, they are still only read once when the CoffeeBoard instance is created.
-
-To allow users to change them without a restart, you need a configuration interface that tells the running instance 
-to update its state.
-
-Option 1: Using Nuke's Knob/Panel System (Recommended)
-    Since you are a VFX Artist and comfortable with Nuke, the most idiomatic way is to create a separate 
-    settings panel or a small window that links directly to your class instance.
-    Create a Settings Widget: 
-        Build a QDialog or Nuke custom panel with input fields (like QSpinBox for columns or QLineEdit for preview_format).
-    Access the Instance: 
-        When the user changes a value and clicks "Apply" (or on every change):
-            Find the running instance of your ReferenceBoard.
-            Directly set the attribute on the instance.
-    Setting     Example Code to Update (inside a Settings Dialog)
-    columns     board_instance.columns = new_value
-    max_scale   board_instance.max_scale = float(new_value)
-
-    Effect: This change takes effect immediately because you are updating the variable on the active, running object instance.
-    No restart is needed.
-
-Option 2: Using User Preferences/Files
-    If you want the settings to be persistent (remembered between Nuke sessions), you would:
-    Read on Init: 
-        In CoffeeBoard.__init__, read the initial values for min_scale, max_scale, etc., from a
-        configuration file (like a JSON file in the user's Nuke directory or a setting saved via nuke.preference()).
-    Write on Change:
-        When the user updates the settings (via the interface mentioned in Option 1), 
-        write the new values back to the configuration file.
-    
-    Effect: This allows settings to persist across sessions, but still requires a restart to take effect since the instance reads them only on initialization.
-"""
