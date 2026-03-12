@@ -1,0 +1,20 @@
+# Internal / studio files
+COFFEEBOARD_PLAN.md
+ADAPTERS.md
+ROADMAP.md
+launch_coffeeboard.bat
+.claude/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
