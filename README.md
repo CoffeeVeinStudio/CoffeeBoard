@@ -6,7 +6,7 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 
 ## Requirements
 
-- **Python 3.7+** (tested on 3.12)
+- **Python 3.8+** (tested on 3.12)
 - **PySide2** (Nuke 15) or **PySide6** (Nuke 16+, standalone)
 - **NumPy** — optional; required for HDR tone mapping (exposure/gamma sliders). If missing, images still load but HDR controls are disabled.
 - **OpenEXR + imath** — optional; enables full EXR spec support. Falls back to a bundled pure-Python EXR reader (`_pure_exr.py`) for uncompressed and ZIP-scanline EXR files without it.
