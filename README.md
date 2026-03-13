@@ -30,22 +30,18 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
    (Nuke 15 ships PySide2 — no separate install needed there.)
 
 ### Nuke
-
-1. Clone the repository somewhere on disk, e.g. `C:\Tools\CoffeeBoard\`.
-
-2. In your `~/.nuke/menu.py` (or your studio's `menu.py`), add:
-
-   ```python
-   import sys
-   sys.path.insert(0, r'C:\Tools')  # parent of the CoffeeBoard/ folder
+1. Clone the repository into your `.nuke` folder:
+```
+   git clone https://github.com/youruser/CoffeeBoard.git ~/.nuke/CoffeeBoard
+```
+2. In your `~/.nuke/menu.py`, add:
+```python
    try:
        import CoffeeBoard.adapters.nuke_adapter
    except Exception as e:
        nuke.warning(f'[CoffeeBoard] failed to load: {e}')
-   ```
-
+```
 3. Restart Nuke. The panel appears in **Window → Add Pane → Coffee Board**.
-
 ---
 
 ## Running Standalone
