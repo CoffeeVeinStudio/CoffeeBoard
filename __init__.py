@@ -1,6 +1,16 @@
 import sys
 from pathlib import Path
 
+# --- Vendor path (always inject first, before any import attempt) ---
+print("starting vendor")
+_py_ver = f"cp3{sys.version_info.minor}"
+_vendor = Path(__file__).parent / 'vendor' / _py_ver
+print(_py_ver, _vendor)
+if _vendor.exists():
+    _vp = str(_vendor)
+    print(_vp)
+    if _vp not in sys.path:
+        sys.path.insert(0, _vp)
 # Add bundled _libs/ to sys.path so OpenImageIO can be imported without
 # any user-level installation.
 _libs = Path(__file__).parent / '_libs'
@@ -11,11 +21,13 @@ if _libs.exists():
 
 try:
     import OpenEXR
+    print("fine")
     version = getattr(OpenEXR, 'OPENEXR_VERSION', getattr(OpenEXR, '__version__', '?'))
     print(f"[CoffeeBoard] OpenEXR {version} — EXR and standard images get HDR controls")
 except ImportError:
     print("[CoffeeBoard] OpenEXR not found — standard images still get HDR controls")
     print("[CoffeeBoard] See _libs/INSTALL.txt to enable full EXR HDR support")
+
 
 # --- numpy auto-discovery ---
 # Nuke's Python may not include numpy. Try to find it in the system Python that
@@ -23,6 +35,15 @@ except ImportError:
 try:
     import numpy  # noqa: fast path — already available
 except ImportError:
+    # --- Vendor fallback ---
+    _py_ver = f"cp3{sys.version_info.minor}"
+    _vendor = Path(__file__).parent.parent / 'vendor' / _py_ver
+    if _vendor.exists():
+        _vp = str(_vendor)
+        if _vp not in sys.path:
+            sys.path.insert(0, _vp)
+    
+    # --- Auto-discovery (subprocess) ---
     _found = False
     try:
         import subprocess, os
