@@ -6,7 +6,7 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 
 ## Requirements
 
-- **Python 3.8+** (tested on 3.12)
+- **Python 3.7+** (tested on 3.12)
 - **PySide2** (Nuke 15) or **PySide6** (Nuke 16+, standalone)
 - **NumPy** — optional; required for HDR tone mapping (exposure/gamma sliders). If missing, images still load but HDR controls are disabled.
 - **OpenEXR + imath** — optional; enables full EXR spec support. Falls back to a bundled pure-Python EXR reader (`_pure_exr.py`) for uncompressed and ZIP-scanline EXR files without it.
@@ -25,23 +25,34 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 
 2. Install dependencies:
    ```
-   pip install PySide6 numpy
+   pip install PySide6 "numpy>=1.24,<2"
    ```
-   (Nuke 15 ships PySide2 — no separate install needed there.)
 
 ### Nuke
-1. Clone the repository into your `.nuke` folder:
-```
-   git clone https://github.com/youruser/CoffeeBoard.git ~/.nuke/CoffeeBoard
-```
-2. In your `~/.nuke/menu.py`, add:
-```python
+
+1. Clone the repository somewhere on disk outside your `.nuke` folder, e.g. `C:\Tools\CoffeeBoard\`.
+
+2. Run the dependency installer using the Python interpreter that ships with your version of Nuke. Repeat this step for each Nuke version you use:
+   ```
+   "C:\Program Files\Nuke15.2v5\python.exe" install.py
+   "C:\Program Files\Nuke14.0v4\python.exe" install.py
+   ```
+   This installs numpy into a versioned `vendor/` folder inside CoffeeBoard — it does not touch your Nuke installation.
+
+3. In your `~/.nuke/menu.py`, add:
+   ```python
+   import sys
+   sys.path.insert(0, r'C:\Tools')  # parent of the CoffeeBoard/ folder
    try:
        import CoffeeBoard.adapters.nuke_adapter
    except Exception as e:
        nuke.warning(f'[CoffeeBoard] failed to load: {e}')
-```
-3. Restart Nuke. The panel appears in **Window → Add Pane → Coffee Board**.
+   ```
+
+4. Restart Nuke. The panel appears in **Window → Add Pane → Coffee Board**.
+
+> **Note:** Do not place CoffeeBoard inside your `.nuke` folder. Keep it in a separate location like `C:\Tools\CoffeeBoard\` and point `menu.py` to its parent as shown above.
+
 ---
 
 ## Running Standalone
