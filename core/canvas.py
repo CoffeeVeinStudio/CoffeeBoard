@@ -102,9 +102,6 @@ class CoffeeBoard(QGraphicsView):
         self.setScene(self.scene)
 
         self.scene.setSceneRect(huge_rect)
-
-    def updateValue(self) -> None:
-        pass  # Required by Nuke's panel API; CoffeeBoard has no knob values to sync.
         self.setBackgroundBrush(QBrush(QColor(35, 35, 35)))
 
         # Set up rendering and interaction
@@ -231,6 +228,9 @@ class CoffeeBoard(QGraphicsView):
         self._item_list_action = QAction("Item List", self)
         self._item_list_action.setCheckable(True)
         self._item_list_action.triggered.connect(self._toggle_item_list_panel)
+
+    def updateValue(self) -> None:
+        pass  # Required by Nuke's panel API; CoffeeBoard has no knob values to sync.
 
     def set_background_for_theme(self, theme: str) -> None:
         color = QColor(35, 35, 35) if theme != "light" else QColor(220, 220, 220)
