@@ -102,6 +102,9 @@ class CoffeeBoard(QGraphicsView):
         self.setScene(self.scene)
 
         self.scene.setSceneRect(huge_rect)
+
+    def updateValue(self) -> None:
+        pass  # Required by Nuke's panel API; CoffeeBoard has no knob values to sync.
         self.setBackgroundBrush(QBrush(QColor(35, 35, 35)))
 
         # Set up rendering and interaction
