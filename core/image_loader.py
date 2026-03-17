@@ -21,7 +21,8 @@ import numpy as np
 def get_exr_layers(path: str) -> List[str]:
     """Return unique layer names for an EXR file.
 
-    Tier 1: OIIO. Tier 2: pure_exr header read. Falls back to ['rgba'].
+    Tier 1: OpenEXR binding. Tier 1b: OpenImageIO (Houdini).
+    Tier 2: pure_exr header read. Falls back to ['rgba'].
     """
     try:
         import OpenEXR
@@ -38,6 +39,21 @@ def get_exr_layers(path: str) -> List[str]:
             return sorted(layers) if layers else ['rgba']
         finally:
             f.close()
+    except Exception:
+        pass
+    # Tier 1b: OpenImageIO (bundled with Houdini)
+    try:
+        import OpenImageIO as oiio
+        buf = oiio.ImageBuf(path)
+        if not buf.has_error:
+            channel_names = list(buf.spec().channelnames)
+            layers = set()
+            for ch in channel_names:
+                if '.' in ch:
+                    layers.add(ch.split('.')[0])
+                else:
+                    layers.add('rgba')
+            return sorted(layers) if layers else ['rgba']
     except Exception:
         pass
     # Tier 2: pure_exr header-only read
@@ -142,6 +158,36 @@ def _load_exr_via_nuke(path: str, layer: str = 'rgba') -> np.ndarray:
             pass
 
 
+def _load_exr_via_openimageio(path: str, layer: str = 'rgba') -> np.ndarray:
+    """Load an EXR via OpenImageIO (bundled with Houdini and other DCCs)."""
+    import OpenImageIO as oiio
+
+    buf = oiio.ImageBuf(path)
+    if buf.has_error:
+        raise RuntimeError(f"OIIO: {buf.geterror()}")
+
+    channel_names = list(buf.spec().channelnames)
+
+    if layer == 'rgba':
+        r = next((c for c in ['R', 'r'] if c in channel_names), None)
+        g = next((c for c in ['G', 'g'] if c in channel_names), None)
+        b = next((c for c in ['B', 'b'] if c in channel_names), None)
+        a = next((c for c in ['A', 'a'] if c in channel_names), None)
+        if not all([r, g, b]):
+            raise RuntimeError(f"No RGB channels found in {path}")
+        wanted = [c for c in [r, g, b, a] if c is not None]
+    else:
+        candidates = [f'{layer}.R', f'{layer}.G', f'{layer}.B', f'{layer}.A']
+        wanted = [c for c in candidates if c in channel_names]
+        if len(wanted) < 3:
+            raise RuntimeError(f"Layer '{layer}' missing RGB channels in {path}")
+
+    indices = tuple(channel_names.index(c) for c in wanted)
+    sub = oiio.ImageBufAlgo.channels(buf, indices)
+    arr = np.asarray(sub.get_pixels(oiio.FLOAT), dtype=np.float32)
+    return arr  # shape: (H, W, 3 or 4)
+
+
 def _numpy_to_pixmap(arr_16bit, width, height):
     """Convert a uint16 (H, W, 4) numpy array to QPixmap."""
     try:
@@ -217,6 +263,24 @@ def load_image(path: str, layer: str = 'rgba') -> Tuple[object, Optional[np.ndar
             pass  # OIIO not installed — fall through to Tier 2
         except Exception as e:
             print(f"[CoffeeBoard] OIIO load failed for {path}: {e}")
+
+        # --- Tier 1b: OpenImageIO (bundled with Houdini) ---
+        try:
+            linear = _load_exr_via_openimageio(path, layer)
+            pixels_16 = apply_display_transform(linear, 0.0, 2.2, 'reinhard')
+
+            h, w, c = pixels_16.shape
+            if c == 3:
+                alpha = np.full((h, w, 1), 65535, dtype=np.uint16)
+                pixels_16 = np.concatenate([pixels_16, alpha], axis=2)
+
+            pixmap = _numpy_to_pixmap(pixels_16, w, h)
+            if not pixmap.isNull():
+                return pixmap, linear
+        except ImportError:
+            pass  # OpenImageIO not available
+        except Exception as e:
+            print(f'[CoffeeBoard] OpenImageIO load failed for {path}: {e}')
 
         # --- Tier 2: pure-Python EXR (no compiled deps) ---
         try:
