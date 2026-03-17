@@ -1,9 +1,10 @@
 """Houdini adapter for CoffeeBoard.
 
-Registration: call launch() from $HOUDINI_PATH/scripts/456.py or a shelf tool.
+Registration options:
+  - Dockable panel tab: run setup_houdini.py once; panel appears in Pane tab menu.
+  - Floating window:    call launch() from $HOUDINI_PATH/scripts/456.py or a shelf tool.
 
 Tested with Houdini Apprentice (free). Should work on any H19+.
-TODO: Replace Qt fallbacks with native hou.ui calls for better integration.
 """
 try:
     import hou
@@ -38,5 +39,8 @@ def launch():
     board.show()
     return board  # caller must keep a reference to prevent GC
 
-# TODO: Embed as a Python Panel pane tab instead of a floating window.
-# See Houdini docs: "Python Panels" > registerFloatingPaneTabType()
+
+def onCreateInterface():
+    """Called by Houdini's Python Panel system to create the dockable panel widget."""
+    from CoffeeBoard.core.canvas import CoffeeBoard
+    return CoffeeBoard()

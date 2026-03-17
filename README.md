@@ -53,6 +53,18 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 
 > **Note:** Do not place CoffeeBoard inside your `.nuke` folder. Keep it in a separate location like `C:\Tools\CoffeeBoard\` and point `menu.py` to its parent as shown above.
 
+### Houdini
+
+1. Clone the repository, e.g. `C:\Tools\CoffeeBoard\`.
+2. Run the setup script (any Python, no Houdini needed):
+   ```
+   python setup_houdini.py
+   ```
+   This installs `coffeeboard.pypanel` into each Houdini version's preferences folder (`~/Documents/houdiniX.Y/python_panels/`).
+3. Restart Houdini. Open Coffee Board via **Pane tab menu (+) → Python Panel → Coffee Board**.
+
+> The floating `launch()` shelf tool continues to work unchanged alongside the panel tab.
+
 ---
 
 ## Running Standalone
