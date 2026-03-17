@@ -186,6 +186,9 @@ class CoffeeBoard(QGraphicsView):
         self.save_action = QAction("Save Reference Board...", self)
         self.save_action.triggered.connect(self.save_board)
 
+        self.save_as_action = QAction("Save As...", self)
+        self.save_as_action.triggered.connect(self.save_board_as)
+
         self.load_action = QAction("Load Reference Board...", self)
         self.load_action.triggered.connect(self.load_board)
 
@@ -766,6 +769,7 @@ class CoffeeBoard(QGraphicsView):
             menu.addAction(self.add_text_action)
             menu.addSeparator()
             menu.addAction(self.save_action)
+            menu.addAction(self.save_as_action)
             menu.addAction(self.load_action)
 
         # --- ShapeItem context menu ---
@@ -794,6 +798,7 @@ class CoffeeBoard(QGraphicsView):
                 draw_menu.addAction(act)
             menu.addSeparator()
             menu.addAction(self.save_action)
+            menu.addAction(self.save_as_action)
             menu.addAction(self.load_action)
 
         # --- Image context menu ---
@@ -830,6 +835,7 @@ class CoffeeBoard(QGraphicsView):
             menu.addSeparator()
 
             menu.addAction(self.save_action)
+            menu.addAction(self.save_as_action)
             menu.addAction(self.load_action)
             menu.addAction(self.consolidate_action)
 
@@ -855,6 +861,7 @@ class CoffeeBoard(QGraphicsView):
             menu.addSeparator()
 
             menu.addAction(self.save_action)
+            menu.addAction(self.save_as_action)
             menu.addAction(self.load_action)
             menu.addAction(self.consolidate_action)
 
@@ -1143,6 +1150,7 @@ class CoffeeBoard(QGraphicsView):
         for item in list(self.shape_items):
             self.scene.removeItem(item)
         self.shape_items.clear()
+        self.current_save_path = None
         self.scene.setSceneRect(QRectF(0, 0, 800, 600))
         self._item_list_panel.refresh()
 
@@ -1170,6 +1178,11 @@ class CoffeeBoard(QGraphicsView):
         """Delegate to board_file.save_board."""
         from CoffeeBoard.core.board_file import save_board
         save_board(self)
+
+    def save_board_as(self) -> None:
+        """Save to a new location, always prompting for a file path."""
+        self.current_save_path = None
+        self.save_board()
 
     def load_board(self, path=None) -> None:
         """Delegate to board_file.load_board."""

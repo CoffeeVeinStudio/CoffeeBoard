@@ -41,9 +41,12 @@ def save_board(board: 'CoffeeBoard') -> None:
     if not file_path:
         return  # User cancelled
 
-    # Ensure .board extension
-    if not file_path.endswith('.board'):
-        file_path += '.board'
+    # Ensure .board extension — strip .json or .json.board if present first
+    for suffix in ('.json.board', '.board', '.json'):
+        if file_path.endswith(suffix):
+            file_path = file_path[:-len(suffix)]
+            break
+    file_path += '.board'
 
     save_dir = os.path.dirname(file_path)
     base_name = os.path.splitext(os.path.basename(file_path))[0]
