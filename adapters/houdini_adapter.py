@@ -26,7 +26,13 @@ def launch():
     except ImportError:
         from PySide6.QtWidgets import QApplication
 
+    try:
+        from PySide2.QtCore import Qt
+    except ImportError:
+        from PySide6.QtCore import Qt
+
     board = CoffeeBoard(parent=hou.qt.mainWindow())
+    board.setWindowFlags(Qt.Window)
     board.setWindowTitle("CoffeeBoard")
     board.resize(1280, 800)
     board.show()
