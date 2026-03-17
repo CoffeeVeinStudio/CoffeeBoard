@@ -9,7 +9,7 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 - **Python 3.7+** (tested on 3.12)
 - **PySide2** (Nuke 15) or **PySide6** (Nuke 16+, standalone)
 - **NumPy** — optional; required for HDR tone mapping (exposure/gamma sliders). If missing, images still load but HDR controls are disabled.
-- **OpenEXR + imath** — optional; enables full EXR spec support. Falls back to a bundled pure-Python EXR reader (`_pure_exr.py`) for uncompressed and ZIP-scanline EXR files without it. **Note:** `imath` has no installable wheels for Python 3.9 (Nuke 14), so DWAA/DWAB/PIZ-compressed EXR files are not supported in Nuke 14. Nuke 15+ (Python 3.10) may work — untested.
+- **OpenEXR + imath** — optional; enables full EXR spec support. Falls back to a bundled pure-Python EXR reader (`_pure_exr.py`) for uncompressed and ZIP-scanline EXR files without it. **Note:** `imath>=3.1` requires Python 3.11+, so DWAA/DWAB/PIZ-compressed EXR files are not supported in Nuke 14 (Python 3.9) or Nuke 15 (Python 3.10). Nuke 16+ (Python 3.11) should work.
 
 ---
 
