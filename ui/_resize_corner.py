@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 try:
     from PySide2.QtCore import Qt, QPoint
     from PySide2.QtGui import QPainter, QColor, QPen

@@ -32,12 +32,12 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 
 1. Clone the repository somewhere on disk outside your `.nuke` folder, e.g. `C:\Tools\CoffeeBoard\`.
 
-2. Run the dependency installer using the Python interpreter that ships with your version of Nuke. Repeat this step for each Nuke version you use:
+2. Install NumPy for each Nuke version you use. Run `install.py` with the Python interpreter that ships with Nuke:
    ```
    "C:\Program Files\Nuke15.2v5\python.exe" install.py
    "C:\Program Files\Nuke14.0v4\python.exe" install.py
    ```
-   This installs numpy into a versioned `vendor/` folder inside CoffeeBoard — it does not touch your Nuke installation.
+   This installs NumPy into a versioned `vendor/` folder inside CoffeeBoard and does not touch your Nuke installation.
 
 3. In your `~/.nuke/menu.py`, add:
    ```python
@@ -49,7 +49,7 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
        nuke.warning(f'[CoffeeBoard] failed to load: {e}')
    ```
 
-4. Restart Nuke. The panel appears in **Window → Add Pane → Coffee Board**.
+4. Restart Nuke. The panel appears in **Windows → Custom → Coffee Board**.
 
 > **Note:** Do not place CoffeeBoard inside your `.nuke` folder. Keep it in a separate location like `C:\Tools\CoffeeBoard\` and point `menu.py` to its parent as shown above.
 
@@ -70,7 +70,7 @@ The window opens at 1280×800. Theme preference (Dark/Light/System) is saved to 
 ## Running in Nuke
 
 1. Open Nuke.
-2. Go to **Window → Add Pane → Coffee Board** (or find it in the panel list).
+2. Go to **Windows → Custom → Coffee Board**.
 3. Dock it wherever you like — it behaves as a standard Nuke panel tab.
 
 **Smart keyboard overrides** activate whenever the mouse cursor is over the CoffeeBoard canvas:
