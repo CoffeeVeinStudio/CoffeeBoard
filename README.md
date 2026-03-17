@@ -32,12 +32,12 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
 
 1. Clone the repository somewhere on disk outside your `.nuke` folder, e.g. `C:\Tools\CoffeeBoard\`.
 
-2. Install NumPy for each Nuke version you use. Run `install.py` with the Python interpreter that ships with Nuke:
+2. Run `install.py` with the Python interpreter that ships with Nuke. The installer detects the DCC and installs only what is needed:
    ```
    "C:\Program Files\Nuke15.2v5\python.exe" install.py
    "C:\Program Files\Nuke14.0v4\python.exe" install.py
    ```
-   This installs NumPy into a versioned `vendor/` folder inside CoffeeBoard and does not touch your Nuke installation.
+   This installs dependencies into a versioned `vendor/` folder inside CoffeeBoard and does not touch your Nuke installation. Repeat for each Nuke version you use.
 
 3. In your `~/.nuke/menu.py`, add:
    ```python
