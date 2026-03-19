@@ -63,7 +63,17 @@ A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas
    This installs `coffeeboard.pypanel` into each Houdini version's preferences folder (`~/Documents/houdiniX.Y/python_panels/`).
 3. Restart Houdini. Open Coffee Board via **Pane tab menu (+) → Python Panel → Coffee Board**.
 
-> The floating `launch()` shelf tool continues to work unchanged alongside the panel tab.
+4. To open Coffee Board as a floating window, create a shelf tool with the following script:
+```python
+import sys
+
+_cb_path = 'C:/Tools'  # parent of the CoffeeBoard/ folder
+if _cb_path not in sys.path:
+    sys.path.insert(0, _cb_path)
+
+from CoffeeBoard.adapters.houdini_adapter import launch
+launch()
+```
 
 ---
 
