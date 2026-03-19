@@ -53,7 +53,7 @@ def main():
         print("Expected locations: ~/Documents/houdiniX.Y  or  ~/houdiniX.Y")
         return
 
-    cb_path = COFFEEBOARD_PARENT.as_posix()  # forward slashes — safe in Python on Windows
+    cb_path = Path(__file__).resolve().parent.parent.as_posix()
     pypanel_content = PYPANEL_TEMPLATE.format(cb_path=cb_path)
 
     for pref_dir in pref_dirs:
