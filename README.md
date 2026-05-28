@@ -1,6 +1,9 @@
 # CoffeeBoard
 
-A VFX reference board for CoffeeVein Studio. Drop images onto an infinite canvas, annotate with text and shapes, and apply per-image HDR controls. Runs standalone or docked inside Nuke.
+A VFX reference board by CoffeeVein Studio. Drop images onto an 
+infinite canvas, annotate with text and shapes, and apply per-image 
+color controls. Supports JPEG, PNG, TIFF, EXR and more, with 
+HDR-aware display. Runs standalone, docked inside Nuke or Houdini.
 
 ---
 
@@ -103,6 +106,31 @@ The window opens at 1280×800. Theme preference (Dark/Light/System) is saved to 
 | `Ctrl+Y` / `Ctrl+Shift+Z` | CoffeeBoard redo | Nuke redo |
 | `Ctrl+S` | Save board | Save Nuke script |
 | `Ctrl+O` | Open board | Open Nuke script |
+
+---
+
+## Running in Houdini
+
+1. Open Houdini.
+2. Add a new pane tab via the **+** menu → **Python Panel → Coffee Board**.
+3. Dock it wherever you like — it behaves as a standard Houdini panel tab.
+
+To open Coffee Board as a floating window, create a shelf tool with
+this script:
+
+    import sys
+
+    _cb_path = 'C:/Tools'  # parent of the CoffeeBoard/ folder
+    if _cb_path not in sys.path:
+        sys.path.insert(0, _cb_path)
+
+    from CoffeeBoard.adapters.houdini_adapter import launch
+    _board = launch()  # keep reference to prevent garbage collection
+
+> **Note:** `setup_houdini.py` installs into all Houdini versions found
+> in your preferences folder and bakes in an absolute path to the
+> CoffeeBoard folder. If you move the repository after installation,
+> re-run `setup_houdini.py`.
 
 ---
 
